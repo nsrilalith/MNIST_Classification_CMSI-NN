@@ -34,17 +34,17 @@ for tensor in tensor_details:
         output_scale = tensor['quantization_parameters']['scales']
     # pass
 
-for detail in tensor_details:
-    if detail['name'] == 'sequential/conv2d/Conv2D':  # Adjust the keyword to match your convolution layers
+for detail in tensor_details: #Iterating through every tensor
+    if detail['name'] == 'sequential/conv2d/Conv2D':  # Selecting Weight tensor
         scales = detail['quantization_parameters']['scales']
         zero_points = detail['quantization_parameters']['zero_points']
         multipliers = []
         shifts = []
-        for scale in scales:
-            effective_scale =  input_scale * scale / output_scale
+        for scale in scales: #Iterating through channel scales
+            effective_scale =  input_scale * scale / output_scale 
             multiplier, shift = get_quantization_params(effective_scale)
-            multipliers.append(multiplier)
-            shifts.append(shift)
+            multipliers.append(multiplier) #List of per channel multipliers
+            shifts.append(shift) #List of per channel shifts
         
         conv_quant_params[detail['name']] = {
             'scales': scales.tolist(),
